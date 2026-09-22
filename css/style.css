@@ -113,11 +113,11 @@ body {
 }
 .seal {
   position: absolute;
-  /* z-index 8 = อยู่ "หลังซอง" → seal มีอยู่จริงตั้งแต่เฟรมแรกที่โหลดหน้า
-     แต่ซองทึบบังไว้ จึงมองไม่เห็น (หน้าแรกไม่มี seal โชว์) */
+  /* z-index 8 = behind the envelope, so the seal is really painted from the first frame
+     but stays hidden behind the opaque envelope (nothing shows on the first page) */
   z-index: 8;
   left: 50%;
-  /* จุดเริ่มต้น = ตำแหน่งเดิมบนฝาซอง (55% ของความสูงซอง ที่วางกลางจอ) */
+  /* Start position = the original spot on the flap (55% of the envelope height, centered on screen) */
   top: calc(50% + min(14px, 2.6vw));
   width: 64px;
   height: 64px;
@@ -130,25 +130,27 @@ body {
   box-shadow: 0 7px 15px rgba(120, 70, 80, 0.2);
   pointer-events: none;
   transform: translate(-50%, -50%);
-  /* บังคับให้เบราว์เซอร์สร้าง layer + rasterize seal ไว้ตั้งแต่ตอนโหลดหน้า (pre-render)
-     พอซองพลิกแล้วสลับ z-index จะได้ไม่ต้อง render ใหม่ → ไม่มีการกะพริบ/ดีเลย์ ไม่เหมือน "เพิ่งโหลด" */
+  /* Force the browser to create a layer and rasterize the seal while the page loads (pre-render).
+     When the envelope flips we only swap the z-index, so nothing has to be re-rendered:
+     no flicker, no delay, no "it just loaded" look. */
   will-change: opacity, transform;
 }
 
-/* 1) ซองพลิกผ่าน ~90 องศาแล้ว → สลับ seal ขึ้นมาอยู่ "หน้าซอง" ทันที
-   เปลี่ยนแค่ z-index (ลำดับการวาด) ไม่มี fade/scale → seal คือของที่วาดไว้แล้ว ไม่ใช่เพิ่งถูก render */
+/* 1) The envelope has rotated past ~90deg -> immediately bring the seal to the front of it.
+   Only z-index (paint order) changes, with no fade/scale, so the seal is existing artwork
+   rather than something being rendered for the first time. */
 .seal.show {
   z-index: 12;
 }
 
-/* 2) พอฝาซองเปิด seal มุดลงไปอยู่ "หลังซอง" (z-index 8 ต่ำกว่าซองที่เป็น 10)
-   → ถูกซองบังทั้งตัว มองไม่เห็นเลย */
+/* 2) Once the flap opens, the seal slips behind the envelope (z-index 8 < the envelope's 10)
+   -> fully covered, completely invisible */
 .seal.behind {
   z-index: 8;
 }
 
-/* 3) จางหายไปพร้อมซอง — ต้องหายก่อนซองจางหมด (2150ms)
-   ไม่งั้นพอซองโปร่งใส seal จะโผล่กลับมาให้เห็น */
+/* 3) Fade out together with the envelope - it has to be gone before the envelope finishes
+   fading (2150ms), otherwise the see-through envelope would reveal the seal again */
 .seal.gone {
   opacity: 0;
   transition: opacity 0.2s ease;
@@ -157,7 +159,8 @@ body {
 .letter {
   position: absolute;
   width: min(430px, 82vw);
-  /* สูงขึ้นจากเดิม 600px -> 660px เพื่อให้มีที่พอสำหรับรูป (เนื้อหาเดิมล้นกระดาษ ~145px) */
+  /* Taller than before (600px -> 660px) to leave room for the photo
+     (the original content overflowed the paper by ~145px) */
   height: min(660px, 78vh);
   background: var(--paper);
   border-radius: 5px;
@@ -238,21 +241,23 @@ p {
 }
 
 .photo {
-  /* ขนาด "พอดี"
-     - ยึด "ความสูง" เป็นหลัก แล้วความกว้างคำนวณจากอัตราส่วนรูปจริง (1536x2048 = 3:4)
-       ถ้าเปลี่ยนรูปใหม่ แนะนำให้เป็นแนวตั้ง 3:4 เพื่อให้กรอบพอดีเป๊ะ
-     - aspect-ratio 3/4 ตรงกับรูปจริง → ไม่ตัดหัว-ท้ายรูปเหมือนเดิม (เดิม 4/5 ตัดไปข้างละ ~8px)
-     - flex: 0 1 auto + min-height: 0 → ถ้าพื้นที่ในกระดาษไม่พอ รูปจะหดลงให้พอดี
-       (ความกว้างหดตามด้วยเพราะ width: auto และ aspect-ratio) จึงไม่ดันปุ่ม/ข้อความล้นออกนอกกระดาษ
-     - height คิดจาก min(290px, 30vh, 52vw) → จอใหญ่ได้รูปใหญ่ จอเล็กก็เล็กลงเอง */
+  /* Sized "just right"
+     - Height driven, with the width derived from the real photo ratio (1536x2048 = 3:4).
+       If the photo is replaced, use a portrait 3:4 image so the frame matches exactly.
+     - aspect-ratio 3/4 matches the real photo -> no more top/bottom cropping
+       (the old 4/5 frame cut roughly 8px off each end)
+     - flex: 0 1 auto + min-height: 0 -> if the paper runs out of room the photo shrinks to fit
+       (its width follows through width: auto + aspect-ratio), so it never pushes the button or
+       the text outside the paper
+     - height uses min(290px, 30vh, 52vw) -> large screens get a large photo, small screens scale down */
   flex: 0 1 auto;
   min-height: 0;
   min-width: 0;
   height: min(290px, 30vh, 52vw);
   width: auto;
   aspect-ratio: 3 / 4;
-  /* content-box เพื่อให้ "พื้นที่รูป" ข้างในกรอบขาวเป็น 3:4 เป๊ะ (border-box จะเพี้ยนไป ~1.6%)
-     → object-fit: cover จึงไม่ต้องตัดรูปเลย */
+  /* content-box keeps the image area inside the white frame exactly 3:4
+     (border-box would be off by ~1.6%), so object-fit: cover never has to crop */
   box-sizing: content-box;
   max-width: 100%;
   margin: 14px 0;
@@ -261,8 +266,8 @@ p {
   background: #f2e3dd;
   box-shadow: 0 10px 28px rgba(110, 75, 65, 0.16);
   border: 7px solid white;
-  /* ให้รูป/placeholder ลอยอยู่ในกรอบ -> ความกว้างของ .photo มาจาก aspect-ratio ล้วน ๆ
-     ไม่ถูกรูปจริง (1536px) มาดันความกว้างจนเพี้ยน */
+  /* The image/placeholder float inside the frame, so .photo's width comes purely from
+     aspect-ratio and is not stretched by the real image (1536px wide) */
   position: relative;
 }
 .photo img {
@@ -361,7 +366,8 @@ button:hover {
   p {
     font-size: 14px;
   }
-  /* ให้พื้นที่ในกระดาษมากขึ้น เพื่อให้รูปมีที่ยืนพอดี (ขนาดรูปปรับเองได้อยู่แล้วจาก height/vh/vw) */
+  /* More room inside the paper so the photo has space to fit
+     (the photo already adapts its own size through height/vh/vw) */
   .page {
     padding: 28px 24px;
   }

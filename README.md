@@ -1,35 +1,38 @@
-# punhya-brith-day-26-year
+# punhya-birthday-26-year
 
-จดหมายอวยพรวันเกิด (แบบซองจดหมายอนิเมชัน) สำหรับปั้นหยา อายุ 26 ปี
+A birthday greeting letter (animated envelope) for Punhya's 26th birthday.
 
-## โครงสร้างโฟลเดอร์
+## Folder structure
 
 ```
 .
-├── index.html            # โครงสร้างหน้าเว็บหลัก
+├── index.html            # Main page markup
 ├── css/
-│   └── style.css         # สไตล์และแอนิเมชันทั้งหมด
+│   └── style.css         # All styles and animations
 ├── js/
-│   └── main.js           # โลจิกการเปิดซอง/พลิกจดหมาย
+│   └── main.js           # Envelope opening / letter flipping logic
 ├── assets/
 │   └── images/
-│       ├── birthday.jpg  # รูปเจ้าของวันเกิด (แนวตั้ง 3:4)
-│       └── mail.png      # ไอคอนเว็บบนแท็บเบราว์เซอร์ (favicon, 512x512)
+│       ├── birthday.jpg  # Birthday person's photo (portrait 3:4)
+│       └── mail.png      # Browser tab icon (favicon, 512x512)
 └── README.md
 ```
 
-## วิธีใช้งาน
+## Usage
 
-เปิดไฟล์ `index.html` ด้วยเบราว์เซอร์ได้โดยตรง หรือรันเซิร์ฟเวอร์ static ง่าย ๆ เช่น:
+Open `index.html` directly in a browser, or run a simple static server:
 
 ```bash
 python3 -m http.server 8080
 ```
 
-แล้วเข้า `http://localhost:8080`
+Then visit `http://localhost:8080`
 
-## การเปลี่ยนรูป
+## Replacing the images
 
-- **รูปเจ้าของวันเกิด** — แทนที่ไฟล์ `assets/images/birthday.jpg` ด้วยรูปจริง (คงชื่อไฟล์เดิมไว้ หรือแก้ `src` ใน `index.html` ให้ตรงกับชื่อไฟล์ใหม่)
-  แนะนำให้เป็น **รูปแนวตั้งอัตราส่วน 3:4** (เช่น 1536x2048) เพื่อให้พอดีกับกรอบในหน้าเว็บพอดี
-- **ไอคอนบนแท็บเบราว์เซอร์ (favicon)** — แทนที่ไฟล์ `assets/images/mail.png` ด้วยไอคอนใหม่ (แนะนำ PNG ทรงสี่เหลี่ยมจัตุรัส ขนาด 512x512)
+- **Birthday photo** — replace `assets/images/birthday.jpg` with the real photo (keep the same
+  filename, or update the `src` in `index.html` to match the new one).
+  A **portrait image with a 3:4 ratio** (e.g. 1536x2048) is recommended so it fits the frame on
+  the page exactly.
+- **Browser tab icon (favicon)** — replace `assets/images/mail.png` with a new icon
+  (a square PNG, 512x512 recommended).

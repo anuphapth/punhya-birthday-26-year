@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>จดหมายจากหมวด</title>
 
-    <!-- ไอคอนบนแท็บเบราว์เซอร์ (favicon) -->
+    <!-- Browser tab icon (favicon) -->
     <link rel="icon" type="image/png" href="assets/images/mail.png" />
     <link rel="apple-touch-icon" href="assets/images/mail.png" />
 
@@ -37,8 +37,8 @@
             <h2>26 Years</h2>
 
             <div class="photo">
-              <!-- เปลี่ยนไฟล์ assets/images/birthday.jpg เป็นรูปจริงของปั้นหยา
-                   แนะนำรูปแนวตั้งอัตราส่วน 3:4 (เช่น 1536x2048) ให้ตรงกับกรอบใน CSS -->
+              <!-- Replace assets/images/birthday.jpg with the real photo of Punhya.
+                   A portrait image with a 3:4 ratio (e.g. 1536x2048) matches the CSS frame exactly. -->
               <img
                 src="assets/images/birthday.jpg"
                 alt="รูปเจ้าของวันเกิด"
@@ -72,8 +72,9 @@
         </div>
       </div>
 
-      <!-- seal อยู่นอกซองเสมอ (เพื่อสลับ z-index หน้าซอง/หลังซองได้)
-           ตั้งแต่โหลดหน้าจะอยู่หลังซอง = มีอยู่แต่แรกแต่ถูกซองบัง ไม่ต้อง render ใหม่ตอนพลิกซอง -->
+      <!-- The seal always lives outside the envelope so its z-index can be swapped in front of it
+           / behind it. On page load it sits behind the envelope: it exists from the first frame
+           (no re-render while the envelope flips) but is completely hidden by it. -->
       <div class="seal" id="seal">♥</div>
 
       <div class="hint" id="hint">
