@@ -4,327 +4,16 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>จดหมายจากหมวด</title>
-    <style>
-      @import url("https://fonts.googleapis.com/css2?family=Itim&family=Prompt:wght@300;400;500;600&display=swap");
 
-      :root {
-        --cream: #fff8ef;
-        --paper: #fffdf8;
-        --pink: #e9a8b8;
-        --pink-dark: #c97f94;
-        --brown: #765b54;
-        --shadow: rgba(110, 75, 65, 0.18);
-      }
+    <!-- ไอคอนบนแท็บเบราว์เซอร์ (favicon) -->
+    <link rel="icon" type="image/png" href="assets/images/mail.png" />
+    <link rel="apple-touch-icon" href="assets/images/mail.png" />
 
-      * {
-        box-sizing: border-box;
-      }
-      body {
-        margin: 0;
-        min-height: 100vh;
-        overflow: hidden;
-        background:
-          radial-gradient(
-            circle at 20% 20%,
-            rgba(255, 210, 220, 0.55),
-            transparent 28%
-          ),
-          radial-gradient(
-            circle at 80% 75%,
-            rgba(255, 226, 194, 0.5),
-            transparent 30%
-          ),
-          var(--cream);
-        color: var(--brown);
-        font-family: "Prompt", sans-serif;
-      }
-
-      .stage {
-        position: relative;
-        width: 100vw;
-        height: 100vh;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        perspective: 1600px;
-      }
-
-      .hint {
-        position: absolute;
-        bottom: 8%;
-        text-align: center;
-        opacity: 0.8;
-        transition: opacity 0.5s;
-        z-index: 20;
-      }
-      .hint strong {
-        font-family: "Itim";
-        font-size: 24px;
-        font-weight: 400;
-      }
-      .hint small {
-        display: block;
-        margin-top: 7px;
-        font-size: 13px;
-      }
-
-      .envelope-wrap {
-        width: min(420px, 78vw);
-        aspect-ratio: 1.5/1;
-        position: relative;
-        transform-style: preserve-3d;
-        transition: transform 1s cubic-bezier(0.2, 0.8, 0.2, 1);
-        cursor: pointer;
-        z-index: 10;
-      }
-      .envelope {
-        position: absolute;
-        inset: 0;
-        background: linear-gradient(145deg, #f7dfe3, #efc4cf);
-        border-radius: 12px;
-        box-shadow: 0 24px 55px var(--shadow);
-        overflow: visible;
-      }
-
-      .envelope-back {
-        position: absolute;
-        inset: 0;
-        border-radius: 12px;
-        background: linear-gradient(145deg, #f8dfe4, #edc1cc);
-      }
-      .flap {
-        position: absolute;
-        left: 0;
-        top: 0;
-        width: 100%;
-        height: 58%;
-        background: linear-gradient(145deg, #f5d6dc, #e8b6c4);
-        clip-path: polygon(0 0, 100% 0, 50% 100%);
-        transform-origin: 50% 0%;
-        transform: rotateX(0deg);
-        transition: transform 1s cubic-bezier(0.2, 0.8, 0.2, 1);
-        z-index: 4;
-        filter: drop-shadow(0 5px 5px rgba(110, 75, 65, 0.1));
-      }
-      .envelope-front {
-        position: absolute;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        height: 67%;
-        background: linear-gradient(160deg, #f4cbd4, #e9b8c6);
-        clip-path: polygon(0 0, 50% 54%, 100% 0, 100% 100%, 0 100%);
-        z-index: 5;
-      }
-      .seal {
-        position: absolute;
-        z-index: 8;
-        left: 50%;
-        top: 55%;
-        transform: translate(-50%, -50%);
-        width: 64px;
-        height: 64px;
-        border-radius: 50%;
-        background: #d9899f;
-        color: white;
-        display: grid;
-        place-items: center;
-        font-size: 28px;
-        box-shadow: 0 7px 15px rgba(120, 70, 80, 0.2);
-        transition: opacity 0.4s;
-      }
-
-      .letter {
-        position: absolute;
-        width: min(430px, 82vw);
-        height: min(600px, 74vh);
-        background: var(--paper);
-        border-radius: 5px;
-        box-shadow: 0 25px 70px var(--shadow);
-        transform-style: preserve-3d;
-        opacity: 0;
-        pointer-events: none;
-        transform: translateY(120px) rotateX(12deg) scale(0.82);
-        transition:
-          opacity 0.4s,
-          transform 1s cubic-bezier(0.2, 0.8, 0.2, 1);
-        z-index: 3;
-        overflow: hidden;
-      }
-
-      .letter.show {
-        opacity: 1;
-        pointer-events: auto;
-        transform: translateY(0) rotateX(0) scale(1);
-      }
-
-      .letter-inner {
-        position: absolute;
-        inset: 0;
-        transform-style: preserve-3d;
-        transition: transform 1.1s cubic-bezier(0.2, 0.75, 0.2, 1);
-      }
-      .letter.flipped .letter-inner {
-        transform: rotateY(180deg);
-      }
-
-      .page {
-        position: absolute;
-        inset: 0;
-        padding: 42px 32px;
-        backface-visibility: hidden;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: flex-start;
-        text-align: center;
-        background:
-          linear-gradient(rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0.55)),
-          repeating-linear-gradient(
-            0deg,
-            transparent 0 31px,
-            rgba(201, 127, 148, 0.08) 32px
-          );
-      }
-      .back {
-        transform: rotateY(180deg);
-        justify-content: center;
-      }
-
-      .ornament {
-        font-size: 28px;
-        margin-bottom: 4px;
-      }
-      h1 {
-        font-family: "Itim";
-        font-size: 42px;
-        line-height: 1.1;
-        font-weight: 400;
-        color: var(--pink-dark);
-        margin: 8px 0;
-      }
-      h2 {
-        font-family: "Itim";
-        font-size: 34px;
-        font-weight: 400;
-        margin: 0 0 16px;
-        color: var(--brown);
-      }
-      p {
-        font-size: 16px;
-        line-height: 1.9;
-        margin: 7px 0;
-      }
-
-      .photo {
-        width: min(250px, 70%);
-        aspect-ratio: 4/5;
-        margin: 20px 0;
-        border-radius: 9px;
-        overflow: hidden;
-        background: #f2e3dd;
-        box-shadow: 0 10px 28px rgba(110, 75, 65, 0.16);
-        border: 7px solid white;
-      }
-      .photo img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        display: block;
-      }
-      .photo .placeholder {
-        height: 100%;
-        display: grid;
-        place-items: center;
-        padding: 20px;
-        color: #a67d72;
-        font-size: 13px;
-      }
-
-      button {
-        border: 0;
-        border-radius: 999px;
-        padding: 11px 23px;
-        background: var(--pink);
-        color: white;
-        font-family: "Prompt";
-        font-size: 14px;
-        cursor: pointer;
-        box-shadow: 0 8px 18px rgba(201, 127, 148, 0.22);
-        transition: 0.2s;
-      }
-      button:hover {
-        transform: translateY(-2px);
-        background: var(--pink-dark);
-      }
-      .open-letter {
-        margin-top: auto;
-      }
-      .flip-btn {
-        margin-top: 24px;
-      }
-
-      .heart {
-        position: absolute;
-        font-size: 18px;
-        opacity: 0.45;
-        animation: float 5s ease-in-out infinite;
-        pointer-events: none;
-      }
-      .heart:nth-child(1) {
-        left: 12%;
-        top: 20%;
-      }
-      .heart:nth-child(2) {
-        right: 14%;
-        top: 28%;
-        animation-delay: 1s;
-      }
-      .heart:nth-child(3) {
-        left: 18%;
-        bottom: 24%;
-        animation-delay: 2s;
-      }
-      .heart:nth-child(4) {
-        right: 19%;
-        bottom: 18%;
-        animation-delay: 3s;
-      }
-
-      .fade {
-        opacity: 0;
-        pointer-events: none;
-      }
-
-      @keyframes float {
-        0%,
-        100% {
-          transform: translateY(0) rotate(-5deg);
-        }
-        50% {
-          transform: translateY(-16px) rotate(5deg);
-        }
-      }
-
-      @media (max-width: 600px) {
-        .letter {
-          height: 72vh;
-        }
-        h1 {
-          font-size: 35px;
-        }
-        h2 {
-          font-size: 29px;
-        }
-        p {
-          font-size: 14px;
-        }
-        .photo {
-          width: 58%;
-          margin: 14px 0;
-        }
-      }
-    </style>
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Itim&family=Prompt:wght@300;400;500;600&display=swap"
+    />
+    <link rel="stylesheet" href="css/style.css" />
   </head>
   <body>
     <div class="stage" id="stage">
@@ -338,7 +27,6 @@
           <div class="envelope-back"></div>
           <div class="flap" id="flap"></div>
           <div class="envelope-front"></div>
-          <div class="seal" id="seal">♥</div>
         </div>
       </div>
 
@@ -349,9 +37,10 @@
             <h2>26 Years</h2>
 
             <div class="photo">
-              <!-- เปลี่ยน birthday.jpg เป็นชื่อไฟล์รูปจริงของปั้นหยา -->
+              <!-- เปลี่ยนไฟล์ assets/images/birthday.jpg เป็นรูปจริงของปั้นหยา
+                   แนะนำรูปแนวตั้งอัตราส่วน 3:4 (เช่น 1536x2048) ให้ตรงกับกรอบใน CSS -->
               <img
-                src="birthday.jpg"
+                src="assets/images/birthday.jpg"
                 alt="รูปเจ้าของวันเกิด"
                 onerror="
                   this.style.display = 'none';
@@ -359,7 +48,7 @@
                 "
               />
               <div class="placeholder" style="display: none">
-                ใส่รูปของปั้นหยาในไฟล์ชื่อ<br /><b>birthday.jpg</b>
+                ใส่รูปของปั้นหยาในไฟล์<br /><b>assets/images/birthday.jpg</b>
               </div>
             </div>
 
@@ -383,50 +72,16 @@
         </div>
       </div>
 
+      <!-- seal อยู่นอกซองเสมอ (เพื่อสลับ z-index หน้าซอง/หลังซองได้)
+           ตั้งแต่โหลดหน้าจะอยู่หลังซอง = มีอยู่แต่แรกแต่ถูกซองบัง ไม่ต้อง render ใหม่ตอนพลิกซอง -->
+      <div class="seal" id="seal">♥</div>
+
       <div class="hint" id="hint">
         <strong>จดหมายจากหมวด</strong>
         <small>กดที่ซองจดหมายเพื่อเปิด</small>
       </div>
     </div>
 
-    <script>
-      const envelopeWrap = document.getElementById("envelopeWrap");
-      const flap = document.getElementById("flap");
-      const seal = document.getElementById("seal");
-      const letter = document.getElementById("letter");
-      const hint = document.getElementById("hint");
-      const flipBtn = document.getElementById("flipBtn");
-
-      let opened = false;
-
-      envelopeWrap.addEventListener("click", () => {
-        if (opened) return;
-        opened = true;
-
-        hint.classList.add("fade");
-
-        // 1) พลิกซอง
-        envelopeWrap.style.transform = "rotateY(180deg) scale(.96)";
-
-        setTimeout(() => {
-          // 2) เปิดฝากระดาษ
-          flap.style.transform = "rotateX(180deg)";
-          seal.style.opacity = "0";
-        }, 850);
-
-        setTimeout(() => {
-          // 3) ซ่อนซอง แล้วให้จดหมายลอยออกมา
-          envelopeWrap.style.opacity = "0";
-          envelopeWrap.style.pointerEvents = "none";
-          letter.classList.add("show");
-        }, 1700);
-      });
-
-      flipBtn.addEventListener("click", (e) => {
-        e.stopPropagation();
-        letter.classList.add("flipped");
-        flipBtn.style.display = "none";
-      });
-    </script>
+    <script src="js/main.js"></script>
   </body>
 </html>
